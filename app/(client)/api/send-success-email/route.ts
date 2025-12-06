@@ -68,11 +68,11 @@ export async function POST(request: NextRequest) {
             </div>
             
             <div style="text-align: center; margin-top: 30px;">
-              <a href="http://localhost:3000/orders" 
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL}/orders" 
                  style="background: #3ab8a3; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin-right: 10px;">
                 View Your Orders
               </a>
-              <a href="http://localhost:3000" 
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL}" 
                  style="background: #161d53; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                 Shop More
               </a>
