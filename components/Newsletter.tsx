@@ -6,15 +6,31 @@ import { Mail, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import toast from "react-hot-toast";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isSignedIn) {
+      toast.error("Please sign in to subscribe to newsletter", {
+        duration: 3000,
+        style: {
+          background: '#fb6c08',
+          color: '#fff',
+        },
+      });
+      setTimeout(() => router.push('/'), 1000);
+      return;
+    }
 
     if (!email) {
       toast.error("Please enter your email address");

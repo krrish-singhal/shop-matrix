@@ -5,6 +5,8 @@ import { Heart } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const FavoriteButton = ({
   showProduct = false,
@@ -14,6 +16,8 @@ const FavoriteButton = ({
   product?: Product | null | undefined;
 }) => {
   const { favoriteProduct, addToFavorite } = useStore();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
   const [existingProduct, setExistingProduct] = useState<Product | null>(null);
   useEffect(() => {
     const availableItem = favoriteProduct.find(
@@ -24,6 +28,19 @@ const FavoriteButton = ({
 
   const handleFavorite = (e: React.MouseEvent<HTMLSpanElement>) => {
     e.preventDefault();
+    
+    if (!isSignedIn) {
+      toast.error("Please sign in to add favorites", {
+        duration: 3000,
+        style: {
+          background: '#fb6c08',
+          color: '#fff',
+        },
+      });
+      setTimeout(() => router.push('/'), 1000);
+      return;
+    }
+
     if (product?._id) {
       addToFavorite(product).then(() => {
         toast.success(

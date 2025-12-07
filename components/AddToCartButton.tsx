@@ -7,6 +7,8 @@ import useStore from "@/store";
 import toast from "react-hot-toast";
 import PriceFormatter from "./PriceFormatter";
 import QuantityButtons from "./QuantityButtons";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 interface Props {
   product: Product;
@@ -15,10 +17,24 @@ interface Props {
 
 const AddToCartButton = ({ product, className }: Props) => {
   const { addItem, getItemCount } = useStore();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
   const itemCount = getItemCount(product?._id);
   const isOutOfStock = product?.stock === 0;
 
   const handleAddToCart = () => {
+    if (!isSignedIn) {
+      toast.error("Please sign in to add items to cart", {
+        duration: 3000,
+        style: {
+          background: '#fb6c08',
+          color: '#fff',
+        },
+      });
+      setTimeout(() => router.push('/'), 1000);
+      return;
+    }
+
     if ((product?.stock as number) > itemCount) {
       addItem(product);
       toast.success(

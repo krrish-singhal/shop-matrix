@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import PageTransition from "@/components/PageTransition";
+import StoreInitializer from "@/components/StoreInitializer";
 
 export const metadata: Metadata = {
   title: {
@@ -22,6 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
+      <StoreInitializer />
       <div className="flex flex-col min-h-screen bg-white dark:bg-[#161d53]">
         <Header />
         <PageTransition>

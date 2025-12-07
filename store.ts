@@ -22,7 +22,13 @@ interface StoreState {
   addToFavorite: (product: Product) => Promise<void>;
   removeFromFavorite: (productId: string) => void;
   resetFavorite: () => void;
+  // user-specific storage
+  initializeStore: (userId: string | null) => void;
+  clearStore: () => void;
 }
+
+// Store instance for each user
+let currentUserId: string | null = null;
 
 const useStore = create<StoreState>()(
   persist(
@@ -112,9 +118,57 @@ const useStore = create<StoreState>()(
       resetFavorite: () => {
         set({ favoriteProduct: [] });
       },
+      initializeStore: (userId: string | null) => {
+        // If userId changed, we need to reload from the correct storage
+        if (userId !== currentUserId) {
+          currentUserId = userId;
+          // Force rehydration with the new storage key
+          const storageKey = userId ? `cart-store-${userId}` : "cart-store-guest";
+          const stored = localStorage.getItem(storageKey);
+          if (stored) {
+            try {
+              const { state } = JSON.parse(stored);
+              set({
+                items: state.items || [],
+                favoriteProduct: state.favoriteProduct || [],
+              });
+            } catch (error) {
+              console.error("Failed to parse stored state:", error);
+              set({ items: [], favoriteProduct: [] });
+            }
+          } else {
+            set({ items: [], favoriteProduct: [] });
+          }
+        }
+      },
+      clearStore: () => {
+        set({ items: [], favoriteProduct: [] });
+        currentUserId = null;
+      },
     }),
     {
       name: "cart-store",
+      getStorage: () => ({
+        getItem: (name) => {
+          const storageKey = currentUserId
+            ? `cart-store-${currentUserId}`
+            : "cart-store-guest";
+          const str = localStorage.getItem(storageKey);
+          return str;
+        },
+        setItem: (name, value) => {
+          const storageKey = currentUserId
+            ? `cart-store-${currentUserId}`
+            : "cart-store-guest";
+          localStorage.setItem(storageKey, value);
+        },
+        removeItem: (name) => {
+          const storageKey = currentUserId
+            ? `cart-store-${currentUserId}`
+            : "cart-store-guest";
+          localStorage.removeItem(storageKey);
+        },
+      }),
     }
   )
 );
