@@ -49,7 +49,7 @@ const ProductCard = ({ product }: { product: Product }) => {
     <div 
       ref={cardRef}
       className={`text-sm border-[1px] rounded-md border-[#3ab8a3]/20 group bg-[#1e2768] text-white 
-      transition-all duration-500 hover-lift
+      transition-all duration-500 hover-lift w-full
       ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
     >
       <div className="relative group overflow-hidden bg-[#161d53] rounded-t-md">
@@ -60,7 +60,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             width={500}
             height={500}
             priority
-            className={`w-full h-64 object-contain overflow-hidden transition-all duration-700 bg-[#161d53]
+            className={`w-full h-48 sm:h-56 md:h-64 object-contain overflow-hidden transition-all duration-700 bg-[#161d53]
             ${product?.stock !== 0 ? "group-hover:scale-110 group-hover:rotate-1" : "opacity-50"}`}
           />
         </Link>

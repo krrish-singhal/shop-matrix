@@ -24,10 +24,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <StoreInitializer />
-      <div className="flex flex-col min-h-screen bg-white dark:bg-[#161d53]">
+      <div className="flex flex-col min-h-screen bg-white dark:bg-[#161d53] w-full overflow-x-hidden">
         <Header />
         <PageTransition>
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 w-full">{children}</main>
         </PageTransition>
         <Footer />
       </div>

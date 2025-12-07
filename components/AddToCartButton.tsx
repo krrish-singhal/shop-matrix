@@ -24,13 +24,7 @@ const AddToCartButton = ({ product, className }: Props) => {
 
   const handleAddToCart = () => {
     if (!isSignedIn) {
-      toast.error("Please sign in to add items to cart", {
-        duration: 3000,
-        style: {
-          background: '#fb6c08',
-          color: '#fff',
-        },
-      });
+      toast.error("Please sign in to add items to cart");
       setTimeout(() => router.push('/'), 1000);
       return;
     }
@@ -38,27 +32,10 @@ const AddToCartButton = ({ product, className }: Props) => {
     if ((product?.stock as number) > itemCount) {
       addItem(product);
       toast.success(
-        `${product?.name?.substring(0, 12)}... added successfully!`,
-        {
-          duration: 2000,
-          style: {
-            background: '#3ab8a3',
-            color: '#fff',
-          },
-          iconTheme: {
-            primary: '#fff',
-            secondary: '#3ab8a3',
-          },
-        }
+        `${product?.name?.substring(0, 12)}... added successfully!`
       );
     } else {
-      toast.error("Can not add more than available stock", {
-        duration: 2000,
-        style: {
-          background: '#ef4444',
-          color: '#fff',
-        },
-      });
+      toast.error("Can not add more than available stock");
     }
   };
   return (

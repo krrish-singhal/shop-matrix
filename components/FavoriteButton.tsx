@@ -30,13 +30,7 @@ const FavoriteButton = ({
     e.preventDefault();
     
     if (!isSignedIn) {
-      toast.error("Please sign in to add favorites", {
-        duration: 3000,
-        style: {
-          background: '#fb6c08',
-          color: '#fff',
-        },
-      });
+      toast.error("Please sign in to add favorites");
       setTimeout(() => router.push('/'), 1000);
       return;
     }

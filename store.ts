@@ -120,10 +120,10 @@ const useStore = create<StoreState>()(
       },
       initializeStore: (userId: string | null) => {
         // If userId changed, we need to reload from the correct storage
-        if (userId !== currentUserId) {
+        if (userId && userId !== currentUserId) {
           currentUserId = userId;
           // Force rehydration with the new storage key
-          const storageKey = userId ? `cart-store-${userId}` : "cart-store-guest";
+          const storageKey = `cart-store-${userId}`;
           const stored = localStorage.getItem(storageKey);
           if (stored) {
             try {
@@ -134,11 +134,10 @@ const useStore = create<StoreState>()(
               });
             } catch (error) {
               console.error("Failed to parse stored state:", error);
-              set({ items: [], favoriteProduct: [] });
+              // Don't clear on error, keep existing state
             }
-          } else {
-            set({ items: [], favoriteProduct: [] });
           }
+          // If no stored data, keep current state (don't reset to empty)
         }
       },
       clearStore: () => {
@@ -150,6 +149,7 @@ const useStore = create<StoreState>()(
       name: "cart-store",
       getStorage: () => ({
         getItem: (name) => {
+          // Use currentUserId if available, otherwise try to get last logged in user
           const storageKey = currentUserId
             ? `cart-store-${currentUserId}`
             : "cart-store-guest";
@@ -169,6 +169,8 @@ const useStore = create<StoreState>()(
           localStorage.removeItem(storageKey);
         },
       }),
+      // Don't skip hydration - always restore from localStorage
+      skipHydration: false,
     }
   )
 );

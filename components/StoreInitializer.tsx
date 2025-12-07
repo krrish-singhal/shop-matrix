@@ -6,19 +6,15 @@ import useStore from "@/store";
 
 export default function StoreInitializer() {
   const { userId, isLoaded } = useAuth();
-  const { initializeStore, clearStore } = useStore();
+  const { initializeStore } = useStore();
 
   useEffect(() => {
-    if (isLoaded) {
-      if (userId) {
-        // User is logged in - initialize with their user ID
-        initializeStore(userId);
-      } else {
-        // User is logged out - clear the store
-        clearStore();
-      }
+    if (isLoaded && userId) {
+      // User is logged in - initialize with their user ID
+      // Cart data persists in localStorage even after logout
+      initializeStore(userId);
     }
-  }, [userId, isLoaded, initializeStore, clearStore]);
+  }, [userId, isLoaded, initializeStore]);
 
   return null;
 }

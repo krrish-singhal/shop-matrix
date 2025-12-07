@@ -231,7 +231,7 @@ const CartPage = () => {
                     })}
                     <Button
                       onClick={handleResetCart}
-                      className="m-5 font-semibold bg-red-900 hover:bg-red-800 !text-white"
+                      className="m-5 font-semibold bg-red-900 hover:bg-red-800 text-white dark:text-white"
                       variant="destructive"
                     >
                       Reset Cart

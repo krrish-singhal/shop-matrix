@@ -21,13 +21,7 @@ const Newsletter = () => {
     e.preventDefault();
 
     if (!isSignedIn) {
-      toast.error("Please sign in to subscribe to newsletter", {
-        duration: 3000,
-        style: {
-          background: '#fb6c08',
-          color: '#fff',
-        },
-      });
+      toast.error("Please sign in to subscribe to newsletter");
       setTimeout(() => router.push('/'), 1000);
       return;
     }
