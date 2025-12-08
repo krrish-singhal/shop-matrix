@@ -48,10 +48,11 @@ const CategoryProducts = ({ categories, slug }: Props) => {
   return (
     <div className="py-5 flex flex-col md:flex-row items-start gap-5">
       <div className="flex flex-col md:min-w-40 border">
-        {categories?.filter((item) => item?.slug?.current !== "mobiles").reduce((acc: Category[], item) => {
+        {categories?.filter((item) => item?.slug?.current !== "mobiles").reduce((acc: Category[], item, index) => {
           // Remove duplicate gaming categories - keep only first occurrence
-          if (item?.title?.toLowerCase() === "gaming" && acc.some(cat => cat?.title?.toLowerCase() === "gaming")) {
-            return acc;
+          const normalizedTitle = item?.title?.toLowerCase().trim();
+          if (normalizedTitle === "gaming" && acc.some(cat => cat?.title?.toLowerCase().trim() === "gaming")) {
+            return acc; // Skip duplicate gaming category
           }
           return [...acc, item];
         }, []).map((item) => (

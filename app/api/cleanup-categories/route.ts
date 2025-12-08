@@ -30,6 +30,58 @@ export async function GET() {
       }
     }
 
+    // Step 2.5: Find all "Gaming" categories and remove duplicates
+    const gamingCategories = allCategories.filter(
+      (cat: { _id: string; title: string; slug: { current: string } }) => 
+        cat.slug?.current === "gaming" || cat.slug?.current === "gamings" || cat.title?.toLowerCase() === "gaming"
+    );
+    
+    console.log(`Found ${gamingCategories.length} "Gaming" categories`);
+    
+    let deletedGaming = 0;
+    // Keep only the first one (oldest), delete all others
+    if (gamingCategories.length > 1) {
+      const keepCategory = gamingCategories[0];
+      console.log(`Keeping Gaming category: ${keepCategory._id} - ${keepCategory.title}`);
+      
+      for (let i = 1; i < gamingCategories.length; i++) {
+        const duplicateCategory = gamingCategories[i];
+        
+        // Find all products referencing this duplicate category
+        const productsWithCategory = await backendClient.fetch(
+          `*[_type == "product" && references($categoryId)]._id`,
+          { categoryId: duplicateCategory._id }
+        );
+        
+        console.log(`Found ${productsWithCategory.length} products referencing duplicate category ${duplicateCategory._id}`);
+        
+        // Reassign those products to the main category
+        for (const productId of productsWithCategory) {
+          const product = await backendClient.fetch(
+            `*[_type == "product" && _id == $productId][0]{ categories }`,
+            { productId }
+          );
+          
+          // Remove duplicate category and add the keeper category if not already there
+          const updatedCategories = product.categories
+            .filter((ref: { _ref: string }) => ref._ref !== duplicateCategory._id)
+            .concat(
+              product.categories.some((ref: { _ref: string }) => ref._ref === keepCategory._id)
+                ? []
+                : [{ _type: 'reference', _ref: keepCategory._id }]
+            );
+          
+          await backendClient.patch(productId).set({ categories: updatedCategories }).commit();
+          console.log(`Updated product ${productId} to use main Gaming category`);
+        }
+        
+        // Now delete the duplicate category
+        await backendClient.delete(duplicateCategory._id);
+        console.log(`Deleted duplicate Gaming category: ${duplicateCategory._id} - ${duplicateCategory.title}`);
+        deletedGaming++;
+      }
+    }
+
     // Step 3: Find "Washing Machine" (singular) and delete it
     const washingMachineSingular = allCategories.filter(
       (cat: { _id: string; title: string; slug: { current: string } }) => cat.title === "Washing Machine" && cat.slug?.current !== "washing-machines"
@@ -62,7 +114,8 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       message: "Categories cleaned up successfully!",
-      deletedDuplicates: camerasCategories.length - 1,
+      deletedCamerasDuplicates: camerasCategories.length - 1,
+      deletedGamingDuplicates: deletedGaming,
     });
   } catch (error) {
     console.error("Cleanup error:", error);
